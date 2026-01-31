@@ -1,0 +1,932 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tarozili Savdo Tizimi - Narx Kiritish va Jami Hisoblash</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* Umumiy stillar */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            color: #333;
+            line-height: 1.6;
+            padding: 20px;
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        /* Sarlavha */
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding: 25px;
+            background: linear-gradient(135deg, #2c3e50, #3498db);
+            color: white;
+            border-radius: 15px;
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.15);
+        }
+        
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+        
+        .subtitle {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+        
+        .logo {
+            font-size: 3rem;
+            margin-bottom: 15px;
+            color: #f1c40f;
+        }
+        
+        /* Asosiy kontent */
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+        
+        @media (max-width: 900px) {
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        /* Kartochkalar */
+        .card {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
+            height: fit-content;
+        }
+        
+        .card-title {
+            color: #2c3e50;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 3px solid #3498db;
+            font-size: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        /* Mahsulot tanlash */
+        .product-buttons {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+        
+        @media (max-width: 600px) {
+            .product-buttons {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+        
+        .product-btn {
+            padding: 18px 10px;
+            border: none;
+            background: linear-gradient(to bottom, #ecf0f1, #bdc3c7);
+            border-radius: 10px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #2c3e50;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            border: 2px solid transparent;
+        }
+        
+        .product-btn:hover {
+            background: linear-gradient(to bottom, #3498db, #2980b9);
+            color: white;
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(52, 152, 219, 0.3);
+        }
+        
+        .product-btn.active {
+            background: linear-gradient(to bottom, #2ecc71, #27ae60);
+            color: white;
+            border-color: #27ae60;
+        }
+        
+        .product-btn i {
+            font-size: 1.5rem;
+            margin-bottom: 10px;
+        }
+        
+        .key-hint {
+            font-size: 0.85rem;
+            margin-top: 5px;
+            opacity: 0.8;
+        }
+        
+        /* Narx kiritish maydoni */
+        .price-input-section {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            border: 2px dashed #bdc3c7;
+        }
+        
+        .input-group {
+            margin-bottom: 20px;
+        }
+        
+        .input-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #2c3e50;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .input-with-icon {
+            position: relative;
+        }
+        
+        .input-with-icon i {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #7f8c8d;
+        }
+        
+        .input-with-icon input {
+            width: 100%;
+            padding: 15px 15px 15px 45px;
+            border: 2px solid #bdc3c7;
+            border-radius: 10px;
+            font-size: 1.1rem;
+            transition: all 0.3s;
+        }
+        
+        .input-with-icon input:focus {
+            outline: none;
+            border-color: #3498db;
+            box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.2);
+        }
+        
+        /* Hisoblash natijasi */
+        .calculation-result {
+            background: linear-gradient(135deg, #e8f4fc, #d6eaf8);
+            padding: 20px;
+            border-radius: 10px;
+            border-left: 5px solid #3498db;
+        }
+        
+        .result-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 15px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid rgba(52, 152, 219, 0.2);
+        }
+        
+        .result-row:last-child {
+            border-bottom: none;
+            font-weight: 700;
+            font-size: 1.3rem;
+            color: #2c3e50;
+        }
+        
+        .total-price {
+            color: #e74c3c;
+            font-size: 1.5rem;
+        }
+        
+        /* Jami hisob qismi */
+        .total-summary {
+            background: linear-gradient(135deg, #2c3e50, #34495e);
+            color: white;
+            padding: 25px;
+            border-radius: 15px;
+            margin-top: 20px;
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2);
+        }
+        
+        .summary-title {
+            font-size: 1.5rem;
+            margin-bottom: 20px;
+            color: #f1c40f;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .summary-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+            margin-bottom: 25px;
+        }
+        
+        @media (max-width: 768px) {
+            .summary-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        .summary-item {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+        }
+        
+        .summary-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #2ecc71;
+            margin: 10px 0;
+        }
+        
+        .summary-label {
+            font-size: 0.9rem;
+            opacity: 0.8;
+        }
+        
+        /* Hisoblagichlar */
+        .counters {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 15px;
+            margin-top: 20px;
+        }
+        
+        @media (max-width: 600px) {
+            .counters {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+        
+        .counter {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+        }
+        
+        .counter-value {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: #f1c40f;
+        }
+        
+        .counter-label {
+            font-size: 0.85rem;
+            margin-top: 5px;
+            opacity: 0.8;
+        }
+        
+        /* Kontrollar */
+        .controls {
+            display: flex;
+            gap: 15px;
+            margin-top: 25px;
+        }
+        
+        @media (max-width: 600px) {
+            .controls {
+                flex-direction: column;
+            }
+        }
+        
+        .control-btn {
+            flex: 1;
+            padding: 15px;
+            border: none;
+            border-radius: 10px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+        
+        .add-btn {
+            background: linear-gradient(to right, #2ecc71, #27ae60);
+            color: white;
+        }
+        
+        .add-btn:hover {
+            background: linear-gradient(to right, #27ae60, #219653);
+            transform: translateY(-2px);
+        }
+        
+        .reset-btn {
+            background: linear-gradient(to right, #e74c3c, #c0392b);
+            color: white;
+        }
+        
+        .reset-btn:hover {
+            background: linear-gradient(to right, #c0392b, #a93226);
+            transform: translateY(-2px);
+        }
+        
+        .clear-btn {
+            background: linear-gradient(to right, #f39c12, #e67e22);
+            color: white;
+        }
+        
+        .clear-btn:hover {
+            background: linear-gradient(to right, #e67e22, #d35400);
+            transform: translateY(-2px);
+        }
+        
+        /* Sotilgan mahsulotlar ro'yxati */
+        .sales-list {
+            margin-top: 30px;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        
+        .sales-list-header {
+            display: grid;
+            grid-template-columns: 3fr 1fr 1fr 1fr;
+            background: #3498db;
+            color: white;
+            padding: 15px;
+            border-radius: 8px 8px 0 0;
+            font-weight: 600;
+        }
+        
+        .sales-item {
+            display: grid;
+            grid-template-columns: 3fr 1fr 1fr 1fr;
+            padding: 15px;
+            border-bottom: 1px solid #eee;
+            background: white;
+            transition: background 0.3s;
+        }
+        
+        .sales-item:nth-child(even) {
+            background: #f8f9fa;
+        }
+        
+        .sales-item:hover {
+            background: #e8f4fc;
+        }
+        
+        .sales-item:last-child {
+            border-radius: 0 0 8px 8px;
+            border-bottom: none;
+        }
+        
+        /* Footer */
+        footer {
+            text-align: center;
+            margin-top: 40px;
+            padding: 20px;
+            color: #7f8c8d;
+            font-size: 0.9rem;
+            border-top: 1px solid #ddd;
+        }
+        
+        /* Animatsiyalar */
+        @keyframes highlight {
+            0% { background-color: #2ecc71; }
+            100% { background-color: white; }
+        }
+        
+        .highlight-add {
+            animation: highlight 0.5s ease;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="logo">
+                <i class="fas fa-calculator"></i>
+            </div>
+            <h1>Tarozili Savdo Tizimi</h1>
+            <p class="subtitle">Narxni o'zingiz kiriting • Jami sotilganlarni avtomatik hisoblang</p>
+        </header>
+        
+        <div class="main-content">
+            <!-- Chap qism: Mahsulot tanlash va narx kiritish -->
+            <div class="card">
+                <h2 class="card-title">
+                    <i class="fas fa-shopping-cart"></i>
+                    Mahsulot Tanlash va Narx Kiritish
+                </h2>
+                
+                <div class="product-buttons" id="product-buttons">
+                    <!-- Mahsulot tugmalari JavaScript orqali yaratiladi -->
+                </div>
+                
+                <div class="price-input-section">
+                    <div class="input-group">
+                        <label for="product-name">
+                            <i class="fas fa-tag"></i>
+                            Tanlangan Mahsulot:
+                        </label>
+                        <div class="input-with-icon">
+                            <i class="fas fa-box"></i>
+                            <input type="text" id="product-name" readonly value="Mahsulot tanlanmagan">
+                        </div>
+                    </div>
+                    
+                    <div class="input-group">
+                        <label for="price-per-kg">
+                            <i class="fas fa-money-bill-wave"></i>
+                            1 kg Narxi (so'm):
+                        </label>
+                        <div class="input-with-icon">
+                            <i class="fas fa-coins"></i>
+                            <input type="number" id="price-per-kg" min="100" step="100" value="5000" placeholder="Narxni kiriting">
+                        </div>
+                    </div>
+                    
+                    <div class="input-group">
+                        <label for="quantity">
+                            <i class="fas fa-weight-hanging"></i>
+                            Miqdor (kg):
+                        </label>
+                        <div class="input-with-icon">
+                            <i class="fas fa-balance-scale"></i>
+                            <input type="number" id="quantity" min="0.1" step="0.1" value="1" placeholder="Kilogrammi kiriting">
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="calculation-result">
+                    <div class="result-row">
+                        <span>1 kg narxi:</span>
+                        <span id="unit-price">5 000 so'm</span>
+                    </div>
+                    <div class="result-row">
+                        <span>Tanlangan miqdor:</span>
+                        <span id="selected-quantity">1 kg</span>
+                    </div>
+                    <div class="result-row">
+                        <span>Umumiy narx:</span>
+                        <span id="total-price" class="total-price">5 000 so'm</span>
+                    </div>
+                </div>
+                
+                <div class="controls">
+                    <button class="control-btn add-btn" id="add-to-sales">
+                        <i class="fas fa-plus-circle"></i>
+                        Sotuvga Qo'shish
+                    </button>
+                    <button class="control-btn reset-btn" id="reset-form">
+                        <i class="fas fa-redo"></i>
+                        Formani Tozalash
+                    </button>
+                </div>
+            </div>
+            
+            <!-- O'ng qism: Jami hisob va sotilganlar -->
+            <div class="card">
+                <h2 class="card-title">
+                    <i class="fas fa-chart-line"></i>
+                    Jami Sotilgan Mahsulotlar
+                </h2>
+                
+                <div class="total-summary">
+                    <h3 class="summary-title">
+                        <i class="fas fa-chart-bar"></i>
+                        Umumiy Hisobot
+                    </h3>
+                    
+                    <div class="summary-grid">
+                        <div class="summary-item">
+                            <div class="summary-label">Jami Sotilgan</div>
+                            <div class="summary-value" id="total-items">0</div>
+                            <div class="summary-label">Mahsulot</div>
+                        </div>
+                        
+                        <div class="summary-item">
+                            <div class="summary-label">Jami Miqdor</div>
+                            <div class="summary-value" id="total-quantity">0</div>
+                            <div class="summary-label">Kilogramm</div>
+                        </div>
+                        
+                        <div class="summary-item">
+                            <div class="summary-label">Jami Summa</div>
+                            <div class="summary-value" id="total-amount">0</div>
+                            <div class="summary-label">So'm</div>
+                        </div>
+                    </div>
+                    
+                    <div class="counters" id="product-counters">
+                        <!-- Mahsulotlar hisoblagichlari JavaScript orqali yaratiladi -->
+                    </div>
+                </div>
+                
+                <div class="sales-list" id="sales-list">
+                    <!-- Sotilgan mahsulotlar ro'yxati -->
+                </div>
+                
+                <div class="controls" style="margin-top: 20px;">
+                    <button class="control-btn clear-btn" id="clear-sales">
+                        <i class="fas fa-trash-alt"></i>
+                        Ro'yxatni Tozalash
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <footer>
+            <p>Tarozili Savdo Tizimi &copy; 2026 | Barcha huquqlar himoyalangan</p>
+            <p>Narxni o'zingiz kiriting va jami sotuvlarni kuzating</p>
+        </footer>
+    </div>
+
+    <script>
+        // Mahsulotlar ma'lumotlari
+        const products = [
+            { id: 1, name: "Pomidor", key: "P", icon: "fas fa-apple-alt", defaultPrice: 8000 },
+            { id: 2, name: "Bodring", key: "B", icon: "fas fa-seedling", defaultPrice: 5000 },
+            { id: 3, name: "Kartoshka", key: "K", icon: "fas fa-potato", defaultPrice: 4000 },
+            { id: 4, name: "Sabzi", key: "S", icon: "fas fa-carrot", defaultPrice: 6000 },
+            { id: 5, name: "Piyoz", key: "I", icon: "fas fa-onion", defaultPrice: 7000 },
+            { id: 6, name: "Sarimsoq piyoz", key: "D", icon: "fas fa-garlic", defaultPrice: 15000 }
+        ];
+
+        // DOM elementlari
+        const productButtonsContainer = document.getElementById('product-buttons');
+        const productNameInput = document.getElementById('product-name');
+        const pricePerKgInput = document.getElementById('price-per-kg');
+        const quantityInput = document.getElementById('quantity');
+        const unitPriceElement = document.getElementById('unit-price');
+        const selectedQuantityElement = document.getElementById('selected-quantity');
+        const totalPriceElement = document.getElementById('total-price');
+        const addToSalesButton = document.getElementById('add-to-sales');
+        const resetFormButton = document.getElementById('reset-form');
+        const clearSalesButton = document.getElementById('clear-sales');
+        const salesListContainer = document.getElementById('sales-list');
+        const productCountersContainer = document.getElementById('product-counters');
+        
+        // Jami hisob elementlari
+        const totalItemsElement = document.getElementById('total-items');
+        const totalQuantityElement = document.getElementById('total-quantity');
+        const totalAmountElement = document.getElementById('total-amount');
+        
+        // O'zgaruvchilar
+        let selectedProduct = null;
+        let salesHistory = [];
+        let productStats = {};
+        
+        // Sahifa yuklanganda ishlaydigan funktsiyalar
+        document.addEventListener('DOMContentLoaded', function() {
+            // Mahsulot tugmalarini yaratish
+            createProductButtons();
+            
+            // Mahsulot statistikasini boshlang'ich holatga keltirish
+            initializeProductStats();
+            
+            // Mahsulot hisoblagichlarini yaratish
+            createProductCounters();
+            
+            // Klaviaturadan mahsulot tanlash
+            document.addEventListener('keydown', handleKeyPress);
+            
+            // Input maydonlarini kuzatish
+            pricePerKgInput.addEventListener('input', calculateTotalPrice);
+            quantityInput.addEventListener('input', calculateTotalPrice);
+            
+            // Tugmalarga hodisa qo'shish
+            addToSalesButton.addEventListener('click', addToSales);
+            resetFormButton.addEventListener('click', resetForm);
+            clearSalesButton.addEventListener('click', clearSales);
+            
+            // Boshlang'ich mahsulotni tanlash (Pomidor)
+            selectProduct(products[0]);
+            
+            // Boshlang'ich hisoblash
+            calculateTotalPrice();
+            
+            // Sotilganlar ro'yxatini yangilash
+            updateSalesList();
+        });
+        
+        // Mahsulot tugmalarini yaratish
+        function createProductButtons() {
+            products.forEach(product => {
+                const button = document.createElement('button');
+                button.className = 'product-btn';
+                button.dataset.id = product.id;
+                button.innerHTML = `
+                    <i class="${product.icon}"></i>
+                    <span>${product.name}</span>
+                    <div class="key-hint">${product.key} tugmasi</div>
+                `;
+                
+                button.addEventListener('click', () => {
+                    selectProduct(product);
+                });
+                
+                productButtonsContainer.appendChild(button);
+            });
+        }
+        
+        // Mahsulot statistikasini boshlang'ich holatga keltirish
+        function initializeProductStats() {
+            products.forEach(product => {
+                productStats[product.id] = {
+                    name: product.name,
+                    count: 0,
+                    quantity: 0,
+                    amount: 0
+                };
+            });
+        }
+        
+        // Mahsulot hisoblagichlarini yaratish
+        function createProductCounters() {
+            products.forEach(product => {
+                const counter = document.createElement('div');
+                counter.className = 'counter';
+                counter.dataset.id = product.id;
+                counter.innerHTML = `
+                    <div class="counter-value">0</div>
+                    <div class="counter-label">${product.name}</div>
+                `;
+                
+                productCountersContainer.appendChild(counter);
+            });
+        }
+        
+        // Klaviaturadan mahsulot tanlash
+        function handleKeyPress(event) {
+            const keyPressed = event.key.toUpperCase();
+            const product = products.find(p => p.key === keyPressed);
+            
+            if (product) {
+                selectProduct(product);
+                highlightSelectedButton(product.id);
+            }
+        }
+        
+        // Mahsulotni tanlash
+        function selectProduct(product) {
+            selectedProduct = product;
+            
+            // Input maydonlarini yangilash
+            productNameInput.value = product.name;
+            pricePerKgInput.value = product.defaultPrice;
+            
+            // UI ni yangilash
+            updateProductDisplay();
+            
+            // Tanlangan tugmani ajratib ko'rsatish
+            highlightSelectedButton(product.id);
+            
+            // Narxni hisoblash
+            calculateTotalPrice();
+        }
+        
+        // Tanlangan tugmani ajratib ko'rsatish
+        function highlightSelectedButton(productId) {
+            document.querySelectorAll('.product-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            
+            const selectedButton = document.querySelector(`.product-btn[data-id="${productId}"]`);
+            if (selectedButton) {
+                selectedButton.classList.add('active');
+            }
+        }
+        
+        // Mahsulot ma'lumotlarini yangilash
+        function updateProductDisplay() {
+            if (!selectedProduct) return;
+            
+            // 1 kg narxini yangilash
+            const price = parseInt(pricePerKgInput.value) || selectedProduct.defaultPrice;
+            unitPriceElement.textContent = formatPrice(price) + " so'm";
+        }
+        
+        // Umumiy narxni hisoblash
+        function calculateTotalPrice() {
+            // Qiymatlarni olish
+            const price = parseInt(pricePerKgInput.value) || 0;
+            const quantity = parseFloat(quantityInput.value) || 0;
+            
+            // Miqdor kamida 0.1 kg bo'lishi kerak
+            if (quantity < 0.1) {
+                quantityInput.value = 0.1;
+                return calculateTotalPrice();
+            }
+            
+            // Umumiy narxni hisoblash
+            const totalPrice = price * quantity;
+            
+            // Ekranga chiqarish
+            selectedQuantityElement.textContent = quantity.toFixed(1) + " kg";
+            totalPriceElement.textContent = formatPrice(totalPrice) + " so'm";
+            
+            // 1 kg narxini yangilash
+            unitPriceElement.textContent = formatPrice(price) + " so'm";
+        }
+        
+        // Sotuvga qo'shish
+        function addToSales() {
+            if (!selectedProduct) {
+                alert("Iltimos, avval mahsulot tanlang!");
+                return;
+            }
+            
+            // Qiymatlarni olish
+            const price = parseInt(pricePerKgInput.value) || 0;
+            const quantity = parseFloat(quantityInput.value) || 0;
+            const total = price * quantity;
+            
+            if (price <= 0 || quantity <= 0) {
+                alert("Iltimos, narx va miqdorni to'g'ri kiriting!");
+                return;
+            }
+            
+            // Sotuvni yaratish
+            const sale = {
+                id: Date.now(),
+                productId: selectedProduct.id,
+                productName: selectedProduct.name,
+                productIcon: selectedProduct.icon,
+                pricePerKg: price,
+                quantity: quantity,
+                total: total,
+                date: new Date().toLocaleTimeString()
+            };
+            
+            // Sotuvlar ro'yxatiga qo'shish
+            salesHistory.push(sale);
+            
+            // Statistikani yangilash
+            updateProductStats(sale);
+            
+            // UI ni yangilash
+            updateSalesList();
+            updateSummary();
+            updateProductCounters();
+            
+            // Animatsiya efekti
+            addToSalesButton.classList.add('highlight-add');
+            setTimeout(() => {
+                addToSalesButton.classList.remove('highlight-add');
+            }, 500);
+            
+            // Formani tozalash (faqat mahsulot tanlash qoladi)
+            resetForm();
+            
+            // Avtomatik ravishda tanlangan mahsulotni saqlash
+            productNameInput.value = selectedProduct.name;
+        }
+        
+        // Mahsulot statistikasini yangilash
+        function updateProductStats(sale) {
+            const stats = productStats[sale.productId];
+            stats.count += 1;
+            stats.quantity += sale.quantity;
+            stats.amount += sale.total;
+        }
+        
+        // Sotilganlar ro'yxatini yangilash
+        function updateSalesList() {
+            // Agar sotuvlar bo'sh bo'lsa
+            if (salesHistory.length === 0) {
+                salesListContainer.innerHTML = `
+                    <div style="text-align: center; padding: 30px; color: #7f8c8d;">
+                        <i class="fas fa-shopping-basket" style="font-size: 3rem; margin-bottom: 15px;"></i>
+                        <h3>Hali sotuvlar mavjud emas</h3>
+                        <p>Mahsulot tanlang, narx va miqdorni kiriting, "Sotuvga Qo'shish" tugmasini bosing</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            // Sarlavha qatorini yaratish
+            let html = `
+                <div class="sales-list-header">
+                    <div>Mahsulot</div>
+                    <div>Narx (1kg)</div>
+                    <div>Miqdor</div>
+                    <div>Jami</div>
+                </div>
+            `;
+            
+            // Sotuvlar ro'yxatini yaratish (eng yangisi birinchi)
+            salesHistory.slice().reverse().forEach(sale => {
+                html += `
+                    <div class="sales-item">
+                        <div style="display: flex; align-items: center; gap: 10px;">
+                            <i class="${sale.productIcon}" style="color: #3498db;"></i>
+                            <span>${sale.productName}</span>
+                            <small style="color: #7f8c8d; font-size: 0.8rem;">${sale.date}</small>
+                        </div>
+                        <div>${formatPrice(sale.pricePerKg)} so'm</div>
+                        <div>${sale.quantity.toFixed(1)} kg</div>
+                        <div style="font-weight: 600; color: #e74c3c;">${formatPrice(sale.total)} so'm</div>
+                    </div>
+                `;
+            });
+            
+            salesListContainer.innerHTML = html;
+        }
+        
+        // Jami hisobni yangilash
+        function updateSummary() {
+            let totalItems = 0;
+            let totalQuantity = 0;
+            let totalAmount = 0;
+            
+            // Barcha sotuvlarni hisoblash
+            salesHistory.forEach(sale => {
+                totalItems += 1;
+                totalQuantity += sale.quantity;
+                totalAmount += sale.total;
+            });
+            
+            // Ekranga chiqarish
+            totalItemsElement.textContent = totalItems;
+            totalQuantityElement.textContent = totalQuantity.toFixed(1);
+            totalAmountElement.textContent = formatPrice(totalAmount);
+        }
+        
+        // Mahsulot hisoblagichlarini yangilash
+        function updateProductCounters() {
+            products.forEach(product => {
+                const stats = productStats[product.id];
+                const counter = document.querySelector(`.counter[data-id="${product.id}"] .counter-value`);
+                if (counter) {
+                    counter.textContent = stats.count;
+                }
+            });
+        }
+        
+        // Formani tozalash
+        function resetForm() {
+            // Faqat narx va miqdorni tozalash
+            quantityInput.value = "1";
+            
+            // Agar mahsulot tanlangan bo'lsa, uning default narxini qo'yish
+            if (selectedProduct) {
+                pricePerKgInput.value = selectedProduct.defaultPrice;
+            } else {
+                pricePerKgInput.value = "5000";
+            }
+            
+            // Hisoblashni yangilash
+            calculateTotalPrice();
+        }
+        
+        // Sotuvlar ro'yxatini tozalash
+        function clearSales() {
+            if (salesHistory.length === 0) {
+                alert("Sotuvlar ro'yxati allaqachon bo'sh!");
+                return;
+            }
+            
+            if (confirm("Haqiqatan ham barcha sotuvlarni o'chirmoqchimisiz?")) {
+                // Sotuvlar ro'yxatini tozalash
+                salesHistory = [];
+                
+                // Statistikani qayta boshlash
+                initializeProductStats();
+                
+                // UI ni yangilash
+                updateSalesList();
+                updateSummary();
+                updateProductCounters();
+            }
+        }
+        
+        // Narxni formatlash
+        function formatPrice(price) {
+            return price.toFixed(0).replace(/\B(?=(\d{3})+(?!\d))/g, " ");
+        }
+    </script>
+</body>
+</html>
